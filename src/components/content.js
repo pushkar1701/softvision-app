@@ -15,7 +15,7 @@ class Content extends Component {
         /*
         ** API data Setup
         */
-        axios.get(`http://jsonplaceholder.typicode.com/posts`)
+        axios.get(`https://jsonplaceholder.typicode.com/posts`)
         .then(res => {
             const data = res.data;
             this.setState({ data });
