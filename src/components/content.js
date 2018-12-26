@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
 let localdata = require('../data/data.json');
 
 class Content extends Component {
@@ -48,40 +49,70 @@ class Content extends Component {
         this.setState({data: updatedData});
     }
 
+    onDragEnd = () => {
+
+    }
+
     render() {
         return (
-            <div className={'container'}>
-                <div className={'filter'}>
-                    Filter data as per title: - <input type='text' onChange={this.filterTable} value={this.state.input}/>
-                </div>
-                <div className={'table-content'}>
-                    <table>
-                        <tbody>
-                            <tr>
-                                {
-                                    this.header.map((val) => {
-                                        return(
-                                            <th key={val}>{val}</th>
-                                        )
-                                    })
-                                }
-                            </tr>
-                            {
-                                this.state.data.map((val) => {
-                                    return(
-                                        <tr key={val.id}>
-                                            <td>{val.userId}</td>
-                                            <td>{val.id}</td> 
-                                            <td>{val.title}</td>
-                                            <td>{val.body}</td>
+            <DragDropContext 
+                onDragEnd={this.onDragEnd}
+            >
+                <div className={'container'}>
+                    <div className={'filter'}>
+                        Filter data as per title: - <input type='text' onChange={this.filterTable} value={this.state.input}/>
+                    </div>
+                        <Droppable
+                            droppableId='table-id-droppable'
+                        >
+                        {(provided) => (
+                            <div className={'table-content'}
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                            >
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            {
+                                                this.header.map((val) => {
+                                                    return(
+                                                        <th key={val}>{val}</th>
+                                                    )
+                                                })
+                                            }
                                         </tr>
-                                    )
-                                })
-                            }
-                        </tbody>
-                    </table>
+                                        {
+                                            this.state.data.map((val) => {
+                                                return(
+                                                    <Draggable
+                                                        draggableId={val.id}
+                                                        index={val.id}
+                                                    >
+                                                    {(provided) => (
+                                                        <tr 
+                                                        ref={provided.innerRef}
+                                                        {...provided.dragHandleProps}
+                                                        {...provided.draggableProps}
+                                                        key={val.id}>
+                                                            <td>{val.userId}</td>
+                                                            <td>{val.id}</td> 
+                                                            <td>{val.title}</td>
+                                                            <td>{val.body}</td>
+                                                        </tr>
+
+                                                    )}
+                                                    </Draggable>
+                                                )
+                                            })
+                                        }
+                                    </tbody>
+                                    {provided.placeholder}
+                                </table>
+                            </div>
+                        )}
+                    </Droppable>
                 </div>
-            </div>
+            </DragDropContext>
         );
     }
 }
